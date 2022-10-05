@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'releases/**'
+      - '!master'
 
 jobs:
   build:
@@ -39,6 +40,9 @@ jobs:
       needs: [build]
       runs-on: ubuntu-latest
       steps:
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
       - uses: actions/checkout@v2
       - name: Set Git config
         run: |
@@ -51,3 +55,4 @@ jobs:
             git pull
             git merge --no-ff ${{ steps.branch-name.outputs.current_branch }} -m "Auto-merge ${{ steps.branch-name.outputs.current_branch }} back to master"
             git push  
+            echo "Running on pr: ${{ steps.branch-name.outputs.current_branch }}"
