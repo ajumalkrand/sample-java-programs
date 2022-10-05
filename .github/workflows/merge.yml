@@ -1,0 +1,25 @@
+name: Merge
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["Sonar_Test"]
+    types:
+      - completed
+      
+jobs:
+  merge-master-back-to-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set Git config
+      run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+    - name: Merge master back to dev
+      run: |
+          git fetch --unshallow
+          git checkout dev
+          git pull
+          git merge --no-ff master -m "Auto-merge master back to dev"
+          git push
