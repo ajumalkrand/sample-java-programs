@@ -1,5 +1,9 @@
-name: Sonar_Test
-on: push
+name: Build
+on:
+  push:
+    branches:
+      - master # or the name of your main branch
+
 jobs:
   build:
     name: Build
@@ -29,6 +33,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar 
-        
-  
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ttt
+ 
+  merge-master-back-to-dev:
+      needs: [build]
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Set Git config
+        run: |
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
+      - name: Merge master back to dev
+        run: |
+            git fetch --unshallow
+            git checkout dev
+            git pull
+            git merge --no-ff master -m "Auto-merge master back to dev"
+            git push  
