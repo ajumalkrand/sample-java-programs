@@ -2,7 +2,8 @@ name: Build
 on:
   push:
     branches:
-      - master # or the name of your main branch
+      - 'releases/**'
+      - '!master'
 
 jobs:
   build:
@@ -47,7 +48,7 @@ jobs:
       - name: Merge master back to dev
         run: |
             git fetch --unshallow
-            git checkout dev
+            git checkout master
             git pull
-            git merge --no-ff master -m "Auto-merge master back to dev"
+            git merge --no-ff ${{ steps.branch-name.outputs.current_branch }} -m "Auto-merge ${{ steps.branch-name.outputs.current_branch }} back to master"
             git push  
