@@ -5,7 +5,7 @@ on:
   workflow_run:
     workflows: ["Sonar_Test"]
     types:
-      - completed
+      - success
       
 jobs:
   merge-master-back-to-dev:
